@@ -1,3 +1,4 @@
+cat > src/ui/streamlit_app.py << 'EOF'
 """
 Main Streamlit Application for Pairs Trading Bot
 ================================================
@@ -5,45 +6,19 @@ Main Streamlit Application for Pairs Trading Bot
 
 import streamlit as st
 import pandas as pd
+import plotly.graph_objects as go
+import plotly.express as px
+from datetime import datetime, timedelta
 import sys
 import os
-from datetime import datetime, timedelta
 
-# Fix import paths for both local and Streamlit Cloud
-import sys
-from pathlib import Path
+# Add src to Python path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
-# Get the project root directory
-file_path = Path(__file__).resolve()
-src_path = file_path.parent.parent  # Goes up to src/
-root_path = src_path.parent  # Goes up to project root
-
-# Add both to path
-sys.path.insert(0, str(root_path))
-sys.path.insert(0, str(src_path))
-
-# Now import our modules
-try:
-    from src.data.data_manager import DataManager
-    from src.analysis.pairs_finder import PairsFinder, TradingPair
-    from src.analysis.statistical import StatisticalAnalyzer
-except ImportError:
-    try:
-        from data.data_manager import DataManager
-        from analysis.pairs_finder import PairsFinder, TradingPair
-        from analysis.statistical import StatisticalAnalyzer
-    except ImportError as e:
-        st.error(f"Critical import error: {e}")
-        st.error("Please check the project structure")
-        st.stop()
-
-# Import plotly
-try:
-    import plotly.graph_objects as go
-    import plotly.express as px
-except ImportError:
-    st.error("Plotly not installed. Please run: pip install plotly")
-    st.stop()
+# Import our modules with absolute imports
+from data.data_manager import DataManager
+from analysis.pairs_finder import PairsFinder, TradingPair
+from analysis.statistical import StatisticalAnalyzer
 
 
 def initialize_session_state():
@@ -231,7 +206,7 @@ def show_pairs_discovery():
 def show_analysis():
     """Analysis Page"""
     st.header("📈 Pairs Analysis")
-    st.info("�� Analysis functionality coming soon!")
+    st.info("🚧 Analysis functionality coming soon!")
 
 
 def show_strategy_config():
@@ -248,8 +223,6 @@ def show_backtesting():
 
 def run_app():
     """Main application runner"""
-    st.write("Debug: run_app() called")  # Debug line
-    
     # Initialize session state
     initialize_session_state()
     
@@ -272,8 +245,3 @@ def run_app():
     st.sidebar.markdown("---")
     st.sidebar.markdown("🤖 **Pairs Trading Bot v1.0**")
     st.sidebar.markdown("Built with Streamlit & Python")
-
-
-# Run directly if this file is executed
-if __name__ == "__main__":
-    run_app()
