@@ -1,4 +1,3 @@
-cat > src/ui/streamlit_app.py << 'EOF'
 """
 Main Streamlit Application for Pairs Trading Bot
 ================================================
@@ -12,13 +11,13 @@ from datetime import datetime, timedelta
 import sys
 import os
 
-# Add src to Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+# Add parent directory to path to import our modules
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-# Import our modules with absolute imports
-from data.data_manager import DataManager
-from analysis.pairs_finder import PairsFinder, TradingPair
-from analysis.statistical import StatisticalAnalyzer
+# Now import our modules
+from src.data.data_manager import DataManager
+from src.analysis.pairs_finder import PairsFinder, TradingPair
+from src.analysis.statistical import StatisticalAnalyzer
 
 
 def initialize_session_state():
@@ -206,7 +205,77 @@ def show_pairs_discovery():
 def show_analysis():
     """Analysis Page"""
     st.header("📈 Pairs Analysis")
-    st.info("🚧 Analysis functionality coming soon!")
+    
+    if not st.session_state.trading_pairs:
+        st.warning("⚠️ Please discover trading pairs first")
+        return
+    
+    # Select pair for analysis
+    pair_options = [f"{pair.symbol1} - {pair.symbol2}" for pair in st.session_state.trading_pairs]
+    selected_pair_name = st.selectbox("Select pair to analyze:", pair_options)
+    
+    if selected_pair_name:
+        # Find the selected pair
+        selected_pair = None
+        for pair in st.session_state.trading_pairs:
+            if f"{pair.symbol1} - {pair.symbol2}" == selected_pair_name:
+                selected_pair = pair
+                break
+        
+        if selected_pair:
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.subheader("Pair Statistics")
+                st.metric("Hedge Ratio", f"{selected_pair.hedge_ratio:.4f}")
+                st.metric("Cointegration p-value", f"{selected_pair.cointegration_pvalue:.4f}")
+                st.metric("ADF p-value", f"{selected_pair.adf_pvalue:.4f}")
+            
+            with col2:
+                st.subheader("Spread Statistics")
+                st.metric("Spread Mean", f"{selected_pair.spread_mean:.4f}")
+                st.metric("Spread Std Dev", f"{selected_pair.spread_std:.4f}")
+                st.metric("Z-Score Range", f"±{2.0:.1f}")
+            
+            # Plot price series and spread
+            try:
+                price1 = st.session_state.data_manager.get_price_series(selected_pair.symbol1)
+                price2 = st.session_state.data_manager.get_price_series(selected_pair.symbol2)
+                spread = StatisticalAnalyzer.calculate_spread(price1, price2, selected_pair.hedge_ratio)
+                
+                # Price comparison chart
+                st.subheader("Price Comparison")
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(x=price1.index, y=price1.values, name=selected_pair.symbol1))
+                fig.add_trace(go.Scatter(x=price2.index, y=price2.values, name=selected_pair.symbol2, yaxis='y2'))
+                
+                fig.update_layout(
+                    title=f"{selected_pair.symbol1} vs {selected_pair.symbol2} Prices",
+                    xaxis_title="Date",
+                    yaxis=dict(title=f"{selected_pair.symbol1} Price", side="left"),
+                    yaxis2=dict(title=f"{selected_pair.symbol2} Price", side="right", overlaying="y"),
+                    height=400
+                )
+                st.plotly_chart(fig, use_container_width=True)
+                
+                # Spread chart
+                st.subheader("Spread Analysis")
+                fig2 = go.Figure()
+                fig2.add_trace(go.Scatter(x=spread.index, y=spread.values, name="Spread"))
+                fig2.add_hline(y=selected_pair.spread_mean, line_dash="dash", line_color="red", annotation_text="Mean")
+                fig2.add_hline(y=selected_pair.spread_mean + 2*selected_pair.spread_std, line_dash="dot", line_color="orange", annotation_text="+2σ")
+                fig2.add_hline(y=selected_pair.spread_mean - 2*selected_pair.spread_std, line_dash="dot", line_color="orange", annotation_text="-2σ")
+                
+                fig2.update_layout(
+                    title="Spread Over Time",
+                    xaxis_title="Date",
+                    yaxis_title="Spread Value",
+                    height=400
+                )
+                st.plotly_chart(fig2, use_container_width=True)
+                
+            except Exception as e:
+                st.error(f"Error creating charts: {str(e)}")
 
 
 def show_strategy_config():
