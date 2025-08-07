@@ -1,32 +1,35 @@
-# Virtual environments
+# Python
+__pycache__/
+*.py[cod]
+*.class
+*.so
+.Python
 .venv/
 venv/
+ENV/
 env/
-trading_bot_env/
 
-# Python cache
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
+# API Keys and Secrets
+.env
+config.ini
+secrets.json
+*.key
 
-# Data files (don't commit large datasets)
-data/raw/
-data/processed/
-*.pkl
-*.csv
-
-# IDE files
+# IDE
 .vscode/
-.DS_Store
-*.code-workspace
-
-# Streamlit
-.streamlit/
+.idea/
+*.swp
+*.swo
 
 # Logs
 *.log
+logs/
 
-# Environment variables
-.env
+# Data files
+*.csv
+data/
+*.db
+*.sqlite
+
+# MacOS
+.DS_Store

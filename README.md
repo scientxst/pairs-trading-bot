@@ -1,2 +1,19 @@
-A comprehensive pairs trading tool built with Python and Streamlit for discovering, analyzing and backtesting statistical arbitrage opportunities in financial markets.
-. Clone and setup: ```bash git clone https://github.com/scientxst/pairs-trading-bot.git cd pairs-trading-bot python3 -m venv .venv source .venv/bin/activate pip install -r requirements.txt
+# Pairs Trading Bot
+
+A Python-based pairs trading bot for automated trading strategies.
+
+## Setup
+1. Clone the repository
+2. Install dependencies: `pip install -r requirements.txt`
+3. Configure your API keys in `.env` file
+4. Run the bot: `python main.py`
+
+## Features
+- Pairs selection and cointegration testing
+- Real-time price monitoring
+- Automated trade execution
+- Risk management
+
+## Requirements
+- Python 3.8+
+- See requirements.txt for dependencies
