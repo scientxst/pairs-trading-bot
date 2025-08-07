@@ -192,7 +192,7 @@ def show_pairs_discovery():
             help="Minimum number of data points required"
         )
     
-    # Find Pairs Button
+    # Finding Pairs Button
     if st.button("🔍 Find Trading Pairs", type="primary"):
         with st.spinner("Analyzing pairs... This may take a few minutes..."):
             try:
@@ -271,7 +271,6 @@ def run_app():
     # Footer
     st.sidebar.markdown("---")
     st.sidebar.markdown("🤖 **Pairs Trading Bot v1.0**")
-    st.sidebar.markdown("Built with Streamlit & Python")
 
 
 # Run directly if this file is executed
