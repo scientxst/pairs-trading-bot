@@ -1,0 +1,32 @@
+# Virtual environments
+.venv/
+venv/
+env/
+trading_bot_env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Data files (don't commit large datasets)
+data/raw/
+data/processed/
+*.pkl
+*.csv
+
+# IDE files
+.vscode/
+.DS_Store
+*.code-workspace
+
+# Streamlit
+.streamlit/
+
+# Logs
+*.log
+
+# Environment variables
+.env
